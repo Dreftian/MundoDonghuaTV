@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Next chapter: a bar and a triangle, stroked.
+
+  Outline, not filled. The filled Material glyphs this replaced read as a solid
+  blob once they were tinted dark on the white focus disc, and a blob is not an
+  icon. Everything here is a stroke on a 24 unit grid at width 2, which is the
+  weight the Amazon player draws, so the row reads as one set.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="#FFFFFFFF">
+    <path
+        android:pathData="M18,4.5 L18,19.5"
+        android:strokeColor="#FFFFFFFF" android:strokeWidth="2" android:fillColor="#00000000" android:strokeLineCap="round" android:strokeLineJoin="round" />
+    <path
+        android:pathData="M5,5 L5,19 L14.5,12 Z"
+        android:strokeColor="#FFFFFFFF" android:strokeWidth="2" android:fillColor="#00000000" android:strokeLineCap="round" android:strokeLineJoin="round" />
+</vector>

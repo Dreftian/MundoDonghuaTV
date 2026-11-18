@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Closed captions: a box with rules inside, as the reference draws it.
+
+  Outline, not filled. The filled Material glyphs this replaced read as a solid
+  blob once they were tinted dark on the white focus disc, and a blob is not an
+  icon. Everything here is a stroke on a 24 unit grid at width 2, which is the
+  weight the Amazon player draws, so the row reads as one set.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="#FFFFFFFF">
+    <path
+        android:pathData="M3,6 L21,6 A2,2 0 0,1 23,8 L23,16 A2,2 0 0,1 21,18 L3,18 A2,2 0 0,1 1,16 L1,8 A2,2 0 0,1 3,6 Z"
+        android:strokeColor="#FFFFFFFF" android:strokeWidth="2" android:fillColor="#00000000" android:strokeLineCap="round" android:strokeLineJoin="round" />
+    <path
+        android:pathData="M6,11 L11,11"
+        android:strokeColor="#FFFFFFFF" android:strokeWidth="2" android:fillColor="#00000000" android:strokeLineCap="round" android:strokeLineJoin="round" />
+    <path
+        android:pathData="M13,11 L18,11"
+        android:strokeColor="#FFFFFFFF" android:strokeWidth="2" android:fillColor="#00000000" android:strokeLineCap="round" android:strokeLineJoin="round" />
+    <path
+        android:pathData="M6,14 L9,14"
+        android:strokeColor="#FFFFFFFF" android:strokeWidth="2" android:fillColor="#00000000" android:strokeLineCap="round" android:strokeLineJoin="round" />
+    <path
+        android:pathData="M12,14 L18,14"
+        android:strokeColor="#FFFFFFFF" android:strokeWidth="2" android:fillColor="#00000000" android:strokeLineCap="round" android:strokeLineJoin="round" />
+</vector>

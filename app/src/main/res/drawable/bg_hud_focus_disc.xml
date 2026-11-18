@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The white disc behind a focused glyph in the action row.
+
+  Applied to the glyph's own container rather than being a state selector on the
+  button, because the disc is not the focusable view: the button is. A selector
+  on a non-focusable view never leaves its first item, which is how the row ended
+  up with labels but no circle behind them.
+
+  Sized to the focus target rather than the glyph, so focus reads from across a
+  room. No border: the reference's disc is flat white.
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="oval">
+    <solid android:color="#FFFFFF" />
+</shape>

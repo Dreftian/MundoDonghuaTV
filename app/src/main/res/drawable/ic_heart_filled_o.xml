@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Favourite, saved: the same heart, filled.
+
+  A second state rather than a tint of the first one. The row tints every glyph
+  white when it is idle and dark when it is focused, so a colour on the artwork
+  cannot carry "you have already saved this" - the fill has to. It is the one
+  thing on this row that says the press did something, which is why the shape
+  changes and not just the shade.
+-->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24"
+    android:tint="#FFFFFFFF">
+    <path
+        android:pathData="M12,20.5 L4.2,13.1 C2.4,11.4 2.4,8.7 4.2,7 C5.9,5.3 8.5,5.3 10.2,7 L12,8.8 L13.8,7 C15.5,5.3 18.1,5.3 19.8,7 C21.6,8.7 21.6,11.4 19.8,13.1 Z"
+        android:strokeColor="#FFFFFFFF" android:strokeWidth="2" android:fillColor="#FFFFFFFF" android:strokeLineCap="round" android:strokeLineJoin="round" />
+</vector>

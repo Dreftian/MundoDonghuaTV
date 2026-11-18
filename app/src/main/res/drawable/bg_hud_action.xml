@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Focus style for the glyph row, taken from the Amazon Prime Video TV player.
+
+  A filled white circle behind the focused glyph, and nothing at all behind the
+  rest. The previous treatment was an orange rounded square plus a 1.05 grow, and
+  it was wrong in two ways: the grow made the row reflow as focus moved, and
+  orange was already the accent for the played part of the scrub bar, so using it
+  here too meant two different things were the same colour.
+
+  Transparent when unfocused on purpose. The row sits over the picture, and a
+  resting plate behind every glyph would darken the video in five places.
+
+  The circle is sized to the whole focus target rather than to the glyph, which
+  is why this is a background on the button and not a tint on the icon: a circle
+  drawn at 24px would be a dot, and the point is that focus reads from across a
+  room.
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_focused="true">
+        <shape android:shape="oval">
+            <solid android:color="#FFFFFF" />
+        </shape>
+    </item>
+    <item android:state_pressed="true">
+        <shape android:shape="oval">
+            <solid android:color="#B3FFFFFF" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="#00000000" />
+        </shape>
+    </item>
+</selector>

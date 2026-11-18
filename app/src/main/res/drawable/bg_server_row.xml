@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  A row in the server picker.
+
+  Same language as the audio and subtitles panels, on purpose: those are
+  choices, and a choice in this UI is a white pill with near-black text, not a
+  coloured capsule. A server is a choice like any other, and giving it its own
+  orange treatment is what made the dialog look like a different application
+  sitting inside this one.
+
+  No state_selected item. The panel pills use white to mean "this is the value",
+  and here the value is the server already playing, which is written as an
+  orange dot at the left of the row instead. A permanently white plate would
+  fight the focus: two white things on screen at once, and the viewer could not
+  tell which one the remote is on.
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_focused="true">
+        <shape android:shape="rectangle">
+            <corners android:radius="8dp" />
+            <solid android:color="#FFFFFF" />
+        </shape>
+    </item>
+    <item android:state_pressed="true">
+        <shape android:shape="rectangle">
+            <corners android:radius="8dp" />
+            <solid android:color="#B3FFFFFF" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="8dp" />
+            <solid android:color="#1F2833" />
+        </shape>
+    </item>
+</selector>

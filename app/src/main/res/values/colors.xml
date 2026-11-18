@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg_dark">#0B0F14</color>
+    <color name="surface_dark">#151B22</color>
+    <color name="surface_high">#1D252E</color>
+    <color name="orange">#F47521</color>
+    <color name="text_primary">#F2F5F8</color>
+    <color name="text_muted">#9AA7B4</color>
+</resources>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Uniform veil over the whole picture while the chrome is up.
+
+  This replaces the top and bottom gradient bars. The gradients had two problems
+  here: they were large translucent surfaces sitting on top of the video, which
+  is fill rate this chipset does not have to spare, and they left the middle of
+  the picture at full brightness while dimming the edges, so the eye was pulled to
+  the brightest part of an overlay that is meant to recede.
+
+  One flat veil is a single pass, reads as a deliberate "the controls are on
+  top" state, and matches the Amazon TV reference. Deliberately no blur: a real
+  RenderEffect blur at this size is not viable on a 4-core Amlogic box.
+-->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="#B3000000" />
+</shape>

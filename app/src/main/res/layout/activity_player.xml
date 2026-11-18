@@ -1,0 +1,542 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Player HUD.
+
+  Laid out from measurements taken off the real Amazon Prime Video TV player at
+  1920x1080, so the numbers below are that player's numbers rather than a guess.
+  Every one of them is expressed as a fraction of the viewport, because on a
+  television the reported density says nothing about physical size: a 4K and a
+  1080p panel are the same size and routinely report the same density, so dp
+  sizing silently produces a different-looking player on every set. Sizes that
+  have to be fixed are applied from TvMetrics in PlayerActivity; what is left
+  here is percentage and wrap-content, which scale with the screen.
+
+  What the reference does, and why this file does it too:
+
+  1. No centre play button. The whole control set is one left-aligned row of
+     glyphs under the scrub bar, and play/pause is the OK key. A big button in
+     the middle of the picture fought the video for attention and cost a second
+     focus stop to walk past.
+
+  2. No permanent labels on that row. A label appears under a button only while
+     it has focus, which is what keeps the row four glyphs wide instead of eight.
+
+  3. One accent-free palette. Focus is a filled white circle, not orange, and
+     the orange survives only as the played part of the scrub bar, so "you are
+     here" has exactly one colour in the player.
+
+  4. The episode carousel is a band under the picture rather than a dialog over
+     it, so the frame you are choosing against is still visible.
+
+  Safe-area insets and absolute sizes are applied programmatically from
+  TvMetrics so there is a single source of truth.
+-->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/root"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000000">
+
+    <androidx.media3.ui.PlayerView
+        android:id="@+id/fsVideo"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000000" />
+
+    <WebView
+        android:id="@+id/fsWebView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#000000"
+        android:visibility="gone" />
+
+    <!--
+      Held at INVISIBLE rather than GONE, and shown or hidden with alpha alone.
+
+      A GONE ConstraintLayout is never measured, so its children keep stale zero
+      sizes and the whole chrome came back empty the first time it was revealed.
+      Keeping it measured costs nothing here, and alpha is a compositor-only
+      property, which is what this chipset needs.
+    -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/fsControls"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0"
+        android:visibility="invisible">
+
+        <!-- The uniform veil. Sits below everything else in this container, so
+             it dims the picture without dimming the controls laid over it. -->
+        <View
+            android:id="@+id/fsScrim"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:background="@drawable/bg_player_scrim"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- ============ Top: identity ============ -->
+        <!--
+          The reference puts the exit control out of the way entirely and relies
+          on Back. A visible way out is still worth having on a set where Back is
+          not obvious, but it moves to the top right so it cannot collide with a
+          long title, which is exactly the case the left placement got wrong.
+        -->
+        <LinearLayout
+            android:id="@+id/topBar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintEnd_toStartOf="@id/fsExit"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/fsTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif-medium"
+                android:maxLines="1"
+                android:singleLine="true"
+                tools:text="The Great Ruler"
+                android:textColor="#FFFFFF"
+                android:textSize="40sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/fsSubTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:singleLine="true"
+                tools:text="Episodio 1"
+                android:textColor="#FFFFFF"
+                android:textSize="24sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/fsExit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_hud_action"
+            android:clickable="true"
+            android:contentDescription="Salir del reproductor"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:gravity="center"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_close" />
+        </LinearLayout>
+
+        <!--
+          The server tag sits under the subtitle rather than to its right. In the
+          reference the title can be the full width of the screen, and a right
+          hand tag was the thing that got pushed off it.
+        -->
+        <TextView
+            android:id="@+id/fsServerTag"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_server_tag"
+            android:maxLines="1"
+            tools:text="Buscando"
+            android:textColor="#C7D0D9"
+            android:textSize="15sp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@id/topBar"
+            app:layout_constraintTop_toBottomOf="@id/topBar" />
+
+        <!-- ============ Bottom: pills, scrub bar, action row ============ -->
+        <LinearLayout
+            android:id="@+id/bottomBar"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <!--
+              Secondary actions, as labelled pills above the scrub bar.
+
+              The reference uses this row for "In scene" and "Cast": things that
+              are worth naming but not worth a permanent slot in the glyph row.
+            -->
+            <LinearLayout
+                android:id="@+id/fsPills"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal" />
+
+            <!-- Elapsed · scrub bar · remaining -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/fsCurrentTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:includeFontPadding="false"
+                    android:maxLines="1"
+                    tools:text="00:00"
+                    android:textColor="#FFFFFF"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+
+                <com.donghua.tv.player.TvSeekBar
+                    android:id="@+id/fsSeek"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:layout_weight="1"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:focusableInTouchMode="true" />
+
+                <!-- Shows time remaining, matching the reference. A total is
+                     less useful once you know how far in you are. -->
+                <TextView
+                    android:id="@+id/fsTotalTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:includeFontPadding="false"
+                    android:maxLines="1"
+                    tools:text="00:00"
+                    android:textColor="#C7D0D9"
+                    android:textSize="20sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!--
+              The glyph row.
+
+              Both clusters are wrap_content, so the separator sits against the
+              last transport glyph instead of at a percentage of the screen. It
+              was pinned at 40% before, which left a four-hundred-pixel hole
+              between the +10s button and the divider and made the row read as
+              two unrelated groups rather than one control strip.
+            -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp">
+
+                <LinearLayout
+                    android:id="@+id/fsActionsLeft"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <!--
+                  The divider between the transport cluster and the rest.
+
+                  Height and weight are set from the reference in applyHudMetrics.
+                  It used to be 0dp, stretched between the top and the bottom of
+                  the action row, and that row reserves room under every glyph for
+                  a label that only appears on focus. So the rule ran 226px: it
+                  drew itself through the space reserved for a caption that was
+                  not there, and read as a curtain rather than as a gap.
+
+                  A pixel scan of the reference puts its rule at x288..289, y852
+                  to 873: two pixels wide and exactly as tall as its 22px glyphs,
+                  vertically centred on them. This one is the same rule scaled to
+                  this row's 40px glyphs, which is what the bias below centres it
+                  on.
+                -->
+                <View
+                    android:id="@+id/fsActionsSep"
+                    android:layout_width="2dp"
+                    android:layout_height="40dp"
+                    android:background="#3DFFFFFF"
+                    app:layout_constraintBottom_toBottomOf="@id/fsActionsLeft"
+                    app:layout_constraintStart_toEndOf="@id/fsActionsLeft"
+                    app:layout_constraintTop_toTopOf="@id/fsActionsLeft"
+                    app:layout_constraintVertical_bias="0.5" />
+
+                <LinearLayout
+                    android:id="@+id/fsActionsRight"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    app:layout_constraintStart_toEndOf="@id/fsActionsSep"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
+
+        <!--
+          The chapter carousel.
+
+          A band under the video, not a full-screen dialog. Prime Video does it
+          this way and the reasons are practical, not just cosmetic: the picture
+          stays visible, so you can see what you are choosing between, and
+          left/right already mean "along this row" to every TV remote, so the
+          strip needs no navigation of its own to be usable.
+
+          It sits inside the chrome, so it shares the scrim and the auto-hide.
+        -->
+        <LinearLayout
+            android:id="@+id/fsChapterStrip"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <!-- The header shares the strip's inset rather than carrying its own.
+                 It was laid out at x=0 while the cards below it started at the
+                 action-safe margin, so the two rows of the same band lined up on
+                 opposite edges of the screen.
+
+                 includeFontPadding is off because this view is a band, not a
+                 paragraph. With it on, the leading above the cap height is dead
+                 space inside the peek, and the cards below start that much
+                 further down the screen for no visible gain. -->
+            <TextView
+                android:id="@+id/fsEpisodesHeader"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-medium"
+                android:includeFontPadding="false"
+                tools:text="Episodios"
+                android:textColor="#FFFFFF"
+                android:textSize="22sp"
+                android:textStyle="bold" />
+
+            <HorizontalScrollView
+                android:id="@+id/fsChapterScroll"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:clipToPadding="false"
+                android:fillViewport="false"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:id="@+id/fsChapterRow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" />
+            </HorizontalScrollView>
+        </LinearLayout>
+
+        <!--
+          The settings panel: subtitles and audio.
+
+          Measured off the Amazon player, and it is not a dialog. It is a band
+          that replaces the control row for as long as it is open, pinned to the
+          same inset as the rest of the chrome: a title, a row of labelled
+          options, and a line of help underneath. A modal box would have put a
+          second window over the picture and hidden the frame you are adjusting.
+
+          Inside this container, not a sibling of it. As a child of the root
+          FrameLayout its constraint attributes are simply ignored, and a
+          zero-width panel pinned to nothing is a panel nobody ever sees.
+
+          Focus here is a white pill, not the white disc of the glyph row. That
+          is the reference's rule and it holds throughout its UI: round for a
+          glyph, rounded rectangle for a choice.
+        -->
+        <LinearLayout
+            android:id="@+id/fsSettingsPanel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <TextView
+                android:id="@+id/fsSettingsTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="#FFFFFF"
+                android:textSize="26sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/fsSettingsRow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="horizontal" />
+
+            <TextView
+                android:id="@+id/fsSettingsHelp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="18dp"
+                android:textColor="#9AA7B4"
+                android:textSize="16sp" />
+        </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ProgressBar
+        android:id="@+id/fsSpinner"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        android:layout_gravity="center"
+        android:indeterminateTint="#F47521"
+        android:visibility="gone" />
+
+    <!-- ============ Failure state ============ -->
+    <LinearLayout
+        android:id="@+id/fsErrorBox"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#E60B0E14"
+        android:descendantFocusability="afterDescendants"
+        android:focusable="true"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/fsErrorTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="12dp"
+            android:fontFamily="sans-serif-medium"
+            android:gravity="center"
+            tools:text="No se pudo reproducir este capítulo"
+            android:textColor="#FFFFFF"
+            android:textSize="28sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/fsErrorMsg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="80dp"
+            android:layout_marginEnd="80dp"
+            android:layout_marginBottom="32dp"
+            android:gravity="center"
+            tools:text="Puedes reintentar o elegir otro servidor de video."
+            android:textColor="#C7D0D9"
+            android:textSize="18sp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:descendantFocusability="afterDescendants"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/fsErrorRetry"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="20dp"
+                android:background="@drawable/bg_hud_error_action"
+                android:clickable="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:gravity="center"
+                android:nextFocusRight="@id/fsErrorServers"
+                android:orientation="vertical"
+                android:paddingStart="30dp"
+                android:paddingTop="14dp"
+                android:paddingEnd="30dp"
+                android:paddingBottom="14dp">
+
+                <ImageView
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:contentDescription="Reintentar"
+                    android:src="@drawable/ic_replay" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    tools:text="Reintentar"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/fsErrorServers"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_hud_error_action"
+                android:clickable="true"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                android:gravity="center"
+                android:nextFocusLeft="@id/fsErrorRetry"
+                android:orientation="vertical"
+                android:paddingStart="30dp"
+                android:paddingTop="14dp"
+                android:paddingEnd="30dp"
+                android:paddingBottom="14dp">
+
+                <ImageView
+                    android:layout_width="26dp"
+                    android:layout_height="26dp"
+                    android:contentDescription="Servidores"
+                    android:src="@drawable/ic_globes" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="6dp"
+                    tools:text="Servidores"
+                    android:textColor="#FFFFFF"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!--
+      Status pill, centred on the picture.
+
+      It used to be a fixed 200dp below the vertical centre of the *screen*.
+      The chrome's bottom bar is roughly a third of a 1080p screen tall, so that
+      put the pill straight on top of the action row, and on a short panel it
+      landed on the subtitles. It is centred on the screen here and shifted onto
+      the centre of the picture from PlayerActivity, which is the only case
+      where those two disagree.
+    -->
+    <TextView
+        android:id="@+id/fsStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal|center_vertical"
+        android:background="@drawable/bg_status_pill"
+        android:elevation="8dp"
+        android:includeFontPadding="false"
+        android:maxLines="2"
+        android:paddingStart="26dp"
+        android:paddingTop="12dp"
+        android:paddingEnd="26dp"
+        android:paddingBottom="12dp"
+        android:textColor="#FFFFFF"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        android:visibility="gone" />
+</FrameLayout>

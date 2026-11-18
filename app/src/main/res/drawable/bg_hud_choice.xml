@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  The white pill used by the settings panel, measured off the Amazon player.
+
+  A choice in a panel is a rounded rectangle, not the disc the glyph row uses.
+  The rule is consistent across the reference's UI: round for a glyph,
+  rounded rectangle for a selection, and the white fill with near-black text is
+  how it says "this is the one you are on".
+
+  Flat, with no border and no gradient. The pill at rest is a dark plate rather
+  than nothing, because these sit on the picture and a control with no plate
+  behind it disappears into a bright frame.
+-->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_focused="true">
+        <shape android:shape="rectangle">
+            <corners android:radius="8dp" />
+            <solid android:color="#FFFFFF" />
+        </shape>
+    </item>
+    <item android:state_selected="true">
+        <shape android:shape="rectangle">
+            <corners android:radius="8dp" />
+            <solid android:color="#FFFFFF" />
+        </shape>
+    </item>
+    <item android:state_pressed="true">
+        <shape android:shape="rectangle">
+            <corners android:radius="8dp" />
+            <solid android:color="#B3FFFFFF" />
+        </shape>
+    </item>
+    <item>
+        <shape android:shape="rectangle">
+            <corners android:radius="8dp" />
+            <solid android:color="#1F2833" />
+        </shape>
+    </item>
+</selector>

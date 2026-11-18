@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Donghua TV</string>
+    <string name="a11y_service_label">Donghua TV (reproductor)</string>
+    <string name="a11y_service_desc">Permite que el reproductor de Donghua TV pulse los botones de reproducción de los sitios de video con el mando de la TV. No se transmite ningún dato personal.</string>
+</resources>
